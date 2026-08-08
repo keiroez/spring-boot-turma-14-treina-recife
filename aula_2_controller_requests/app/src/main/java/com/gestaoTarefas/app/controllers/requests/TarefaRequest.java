@@ -1,4 +1,6 @@
 package com.gestaoTarefas.app.controllers.requests;
 
-public record TarefaRequest() {
+import com.gestaoTarefas.app.models.enums.Prioridade;
+
+public record TarefaRequest(String titulo, String descricao, Prioridade prioridade) {
 }
