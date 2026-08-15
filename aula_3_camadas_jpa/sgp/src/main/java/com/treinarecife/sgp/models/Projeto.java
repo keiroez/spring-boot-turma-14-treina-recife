@@ -2,18 +2,28 @@ package com.treinarecife.sgp.models;
 
 import com.treinarecife.sgp.models.dto.ProjetoResponse;
 import com.treinarecife.sgp.models.enums.StatusProjeto;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+@Entity
 public class Projeto {
+
+    @Id
+    @GeneratedValue
     private Long id;
     private String nome, descricao;
     private LocalDate dataInicio, dataConclusao;
     private StatusProjeto status;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
     private Usuario responsavel;
 
-    public Projeto(Long id, String nome, String descricao, LocalDate dataInicio, LocalDate dataConclusao, StatusProjeto status, Usuario responsavel) {
-        this.id = id;
+    public Projeto() {
+    }
+
+    public Projeto(String nome, String descricao, LocalDate dataInicio, LocalDate dataConclusao, StatusProjeto status, Usuario responsavel) {
         this.nome = nome;
         this.descricao = descricao;
         this.dataInicio = dataInicio;

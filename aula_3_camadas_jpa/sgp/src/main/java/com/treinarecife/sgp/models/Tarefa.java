@@ -3,12 +3,22 @@ package com.treinarecife.sgp.models;
 import com.treinarecife.sgp.models.dto.TarefaResponse;
 import com.treinarecife.sgp.models.enums.Prioridade;
 import com.treinarecife.sgp.models.enums.StatusTarefa;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
+@Entity
 public class Tarefa {
+
+    @Id
+    @GeneratedValue
     private Long id;
     private String titulo, descricao;
     private Prioridade prioridade;
     private StatusTarefa status;
+
+    public Tarefa() {
+    }
 
     public Tarefa(Long id, String titulo, String descricao, Prioridade prioridade,
                   StatusTarefa status) {

@@ -4,6 +4,9 @@ import com.treinarecife.sgp.models.Projeto;
 import com.treinarecife.sgp.models.Usuario;
 import com.treinarecife.sgp.models.dto.ProjetoRequest;
 import com.treinarecife.sgp.models.dto.ProjetoResponse;
+import com.treinarecife.sgp.services.ProjetoService;
+import com.treinarecife.sgp.services.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,11 +15,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/projetos")
 public class ProjetoController {
-    private List<Projeto> projetos = new ArrayList<>();
+    @Autowired
+    private ProjetoService projetoService;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @GetMapping
     public List<ProjetoResponse> listar() {
         List<ProjetoResponse> resultado = new ArrayList<>();
+        List<Projeto> projetos = projetoService.buscarTodos();
         for (Projeto t : projetos) {
             resultado.add(t.toDTO());
         }
@@ -24,18 +32,14 @@ public class ProjetoController {
     }
     @GetMapping("/{id}")
     public ProjetoResponse buscarPorId(@PathVariable Long id) {
-        for (Projeto t : projetos) {
-            if (t.getId().equals(id)) return t.toDTO();
-        }
-        throw new RuntimeException("Tarefa não encontrada");
+        Projeto projeto = projetoService.buscarPorId(id);
+        return projeto.toDTO();
     }
 
     @PostMapping
     public ProjetoResponse criar(@RequestBody ProjetoRequest req) {
-        Long proximoId = projetos.size()+1L;
-        Usuario usuario = new Usuario(req.responsavel());
+        Usuario usuario = usuarioService.buscarPorId(req.responsavel());
         Projeto nova = new Projeto(
-                proximoId,
                 req.nome(),
                 req.descricao(),
                 req.dataInicio(),
@@ -43,24 +47,22 @@ public class ProjetoController {
                 req.status(),
                 usuario
         );
-        projetos.add(nova);
+        projetoService.inserir(nova);
         return nova.toDTO();
     }
 
     @PutMapping("/{id}")
     public ProjetoResponse atualizar(@PathVariable Long id, @RequestBody ProjetoRequest req) {
-        for (Projeto u : projetos) {
-            if (u.getId().equals(id)) {
-                u.setDescricao(req.descricao());
-                return u.toDTO();
-            }
-        }
-        throw new RuntimeException("Tarefa não encontrada");
+        Projeto projeto = projetoService.buscarPorId(id);
+        projeto.setNome(req.nome());
+        projeto.setDescricao(req.descricao());
+
+        projetoService.atualizar(projeto);
+
+        return projeto.toDTO();
     }
     @DeleteMapping("/{id}")
     public void remover(@PathVariable Long id) {
-        for (int i = 0; i < projetos.size(); i++) {
-            if (projetos.get(i).getId().equals(id)) projetos.remove(i);
-        }
+        projetoService.deletar(id);
     }
 }
