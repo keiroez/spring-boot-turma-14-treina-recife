@@ -43,13 +43,7 @@ public class UsuarioController {
     public UsuarioResponse atualizar(@PathVariable Long id, @RequestBody UsuarioRequest req) {
         Usuario usuario = usuarioService.buscarPorId(id);
         usuario.setNome(req.nome());
-        usuario.setCpf(req.cpf());
-        usuario.setEmail(req.email());
-        usuario.setSenha(req.senha());
-        usuario.setDataNascimento(req.dataNascimento());
-
         usuarioService.atualizar(usuario);
-
         return usuario.toDTO();
     }
     @DeleteMapping("/{id}")
