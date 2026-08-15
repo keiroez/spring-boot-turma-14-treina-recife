@@ -3,6 +3,7 @@ package com.treinarecife.sgp.controllers;
 import com.treinarecife.sgp.models.Usuario;
 import com.treinarecife.sgp.models.dto.UsuarioRequest;
 import com.treinarecife.sgp.models.dto.UsuarioResponse;
+import com.treinarecife.sgp.services.UsuarioService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,8 +13,13 @@ import java.util.List;
 @RequestMapping("usuarios")
 public class UsuarioController {
 
+    private final UsuarioService usuarioService;
 
     private List<Usuario> usuarios = new ArrayList<>();
+
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @GetMapping
     public List<UsuarioResponse> listar() {
@@ -33,9 +39,8 @@ public class UsuarioController {
 
     @PostMapping
     public UsuarioResponse criar(@RequestBody UsuarioRequest req) {
-        Long proximoId = usuarios.size()+1L;
-        Usuario nova = new Usuario(proximoId, req.nome(), req.cpf(),req.email(), req.senha(), req.dataNascimento(), req.status());
-        usuarios.add(nova);
+        Usuario nova = new Usuario(req.nome(), req.cpf(),req.email(), req.senha(), req.dataNascimento(), req.status());
+        usuarioService.inserir(nova);
         return nova.toDTO();
     }
 
