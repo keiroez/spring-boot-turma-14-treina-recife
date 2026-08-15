@@ -2,27 +2,17 @@ package com.treinarecife.sgp.models;
 
 import com.treinarecife.sgp.models.dto.UsuarioResponse;
 import com.treinarecife.sgp.models.enums.StatusUsuario;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.time.LocalDate;
 
-@Entity
 public class Usuario {
-
-    @Id
-    @GeneratedValue
     private Long id;
     private String nome, cpf, email, senha;
     private LocalDate dataNascimento;
     private StatusUsuario status;
 
-    public Usuario() {
-    }
-
-    public Usuario(String nome, String cpf, String email, String senha, LocalDate dataNascimento, StatusUsuario status) {
+    public Usuario(Long id, String nome, String cpf, String email, String senha, LocalDate dataNascimento, StatusUsuario status) {
+        this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.email = email;
