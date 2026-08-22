@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: sgp
+  datasource:
+    url: jdbc:h2:mem:sgp
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+      format_sql: true
+    show-sql: true
