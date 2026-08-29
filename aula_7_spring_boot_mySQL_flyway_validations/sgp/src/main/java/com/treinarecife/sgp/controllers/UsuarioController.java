@@ -4,6 +4,7 @@ import com.treinarecife.sgp.models.Usuario;
 import com.treinarecife.sgp.models.dto.UsuarioRequest;
 import com.treinarecife.sgp.models.dto.UsuarioResponse;
 import com.treinarecife.sgp.services.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +37,8 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public UsuarioResponse inserir(@RequestBody UsuarioRequest usuarioRequest){
+    public UsuarioResponse inserir(
+            @Valid @RequestBody UsuarioRequest usuarioRequest){
         Usuario usuario = usuarioService.inserir(usuarioRequest);
         return usuario.toDTO();
     }
