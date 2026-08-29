@@ -1,5 +1,6 @@
 package com.treinarecife.sgp.services;
 
+import com.treinarecife.sgp.models.Projeto;
 import com.treinarecife.sgp.models.Tarefa;
 import com.treinarecife.sgp.models.dto.TarefaRequest;
 import com.treinarecife.sgp.models.Usuario;
@@ -17,6 +18,9 @@ public class TarefaService {
     @Autowired
     private UsuarioService usuarioService;
 
+    @Autowired
+    private ProjetoService projetoService;
+
     public List<Tarefa> buscarTodos(){
         return tarefaRepository.findAll();
     }
@@ -27,6 +31,8 @@ public class TarefaService {
 
     public Tarefa inserir(TarefaRequest tarefaRequest){
         Usuario usuario = usuarioService.buscarPorId(tarefaRequest.usuario());
+        Projeto projeto = projetoService.buscarPorId(tarefaRequest.projeto());
+
         Tarefa tarefa = new Tarefa(
                 tarefaRequest.titulo(),
                 tarefaRequest.descricao(),
@@ -34,7 +40,8 @@ public class TarefaService {
                 tarefaRequest.dataConclusao(),
                 tarefaRequest.prioridade(),
                 tarefaRequest.status(),
-                usuario
+                usuario,
+                projeto
         );
         return tarefaRepository.save(tarefa);
     }

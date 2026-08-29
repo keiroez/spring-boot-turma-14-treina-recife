@@ -2,19 +2,22 @@ package com.treinarecife.sgp.models;
 
 import com.treinarecife.sgp.models.dto.UsuarioResponse;
 import com.treinarecife.sgp.models.enums.StatusUsuario;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
 @Entity
 public class Usuario {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long id;
     private String nome, cpf, email, senha;
+
+    @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
+
+    @Enumerated(EnumType.STRING)
     private StatusUsuario status;
 
     public UsuarioResponse toDTO(){

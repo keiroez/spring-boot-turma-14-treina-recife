@@ -9,14 +9,22 @@ import java.time.LocalDate;
 @Entity
 public class Projeto {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_projeto")
     private Long id;
     private String nome, descricao;
-    private LocalDate dataInicio, dataConclusao;
+
+    @Column(name = "data_inicio")
+    private LocalDate dataInicio;
+
+    @Column(name = "data_conclusao")
+    private LocalDate dataConclusao;
+
+    @Enumerated(EnumType.STRING)
     private StatusProjeto status;
 
     @ManyToOne
-    @JoinColumn(name = "id_responsavel")
+    @JoinColumn(name = "id_usuario")
     private Usuario responsavel;
 
     public ProjetoResponse toDTO(){

@@ -11,22 +11,37 @@ import java.time.LocalDate;
 @Entity
 public class Tarefa {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_tarefa")
     private Long id;
     private String titulo, descricao;
-    private LocalDate dataCriacao, dataConclusao;
+
+    @Column(name = "data_criacao")
+    private LocalDate dataCriacao;
+
+    @Column(name = "data_conclusao")
+    private LocalDate dataConclusao;
+
+    @Enumerated(EnumType.STRING)
     private Prioridade prioridade;
+
+    @Enumerated(EnumType.STRING)
     private StatusTarefa status;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private Usuario usuario;
 
+    @ManyToOne
+    @JoinColumn(name = "id_projeto")
+    private Projeto projeto;
+
     public TarefaResponse toDTO(){
         return new TarefaResponse(this.id, this.titulo, this.descricao);
     }
 
-    public Tarefa(String titulo, String descricao, LocalDate dataCriacao, LocalDate dataConclusao, Prioridade prioridade, StatusTarefa status, Usuario usuario) {
+    public Tarefa(String titulo, String descricao, LocalDate dataCriacao, LocalDate dataConclusao,
+                  Prioridade prioridade, StatusTarefa status, Usuario usuario, Projeto projeto) {
         this.titulo = titulo;
         this.descricao = descricao;
         this.dataCriacao = dataCriacao;
@@ -34,6 +49,7 @@ public class Tarefa {
         this.prioridade = prioridade;
         this.status = status;
         this.usuario = usuario;
+        this.projeto = projeto;
     }
 
     public Tarefa() {
@@ -101,6 +117,14 @@ public class Tarefa {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public Projeto getProjeto() {
+        return projeto;
+    }
+
+    public void setProjeto(Projeto projeto) {
+        this.projeto = projeto;
     }
 }
 

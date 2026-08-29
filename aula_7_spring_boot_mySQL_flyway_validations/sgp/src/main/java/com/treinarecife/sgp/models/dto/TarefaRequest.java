@@ -13,6 +13,7 @@ public record TarefaRequest(
         LocalDate dataConclusao,
         Prioridade prioridade,
         StatusTarefa status,
-        Long usuario
+        Long usuario,
+        Long projeto
 ) {
 }
