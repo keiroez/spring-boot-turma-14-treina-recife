@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: gestao
+  datasource:
+    url: jdbc:mysql://localhost:3306/gestao14?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# Configuracoes da API de seguranca / token JWT
+api:
+  security:
+    token:
+      # Em producao use uma variavel de ambiente: ${JWT_SECRET}
+      secret: "minha-chave-secreta-super-segura-troque-em-producao"
+      # Tempo de expiracao do token em horas
+      expiration-hours: 2
+
+server:
+  port: 8080
