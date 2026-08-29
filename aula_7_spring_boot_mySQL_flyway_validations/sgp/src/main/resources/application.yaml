@@ -2,12 +2,11 @@ spring:
   application:
     name: sgp
   datasource:
-    url: jdbc:h2:mem:sgp
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/sgp14
+    username: root
+    password: root
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
       format_sql: true
     show-sql: true
