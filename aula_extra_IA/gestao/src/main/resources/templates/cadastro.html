@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Cadastro')}"></head>
+<body class="tela-centralizada">
+
+<main class="card card-auth">
+    <h1>Criar conta</h1>
+    <p class="subtitulo">Preencha seus dados</p>
+
+    <form id="form-cadastro">
+        <label>
+            Nome
+            <input type="text" id="nome" required>
+        </label>
+        <label>
+            CPF
+            <input type="text" id="cpf" maxlength="14" placeholder="Somente números" required>
+        </label>
+        <label>
+            E-mail
+            <input type="email" id="email" required>
+        </label>
+        <label>
+            Senha
+            <input type="password" id="senha" minlength="6" required>
+        </label>
+        <label>
+            Data de nascimento
+            <input type="date" id="dataNascimento">
+        </label>
+        <button type="submit" class="btn btn-primario">Cadastrar</button>
+    </form>
+
+    <p id="mensagem" class="mensagem"></p>
+    <p class="link-secundario">
+        Já tem conta? <a th:href="@{/login}">Entrar</a>
+    </p>
+</main>
+
+<script th:src="@{/js/api.js}"></script>
+<script th:src="@{/js/cadastro.js}"></script>
+</body>
+</html>

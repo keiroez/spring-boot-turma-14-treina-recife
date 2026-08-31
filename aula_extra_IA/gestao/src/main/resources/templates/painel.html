@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Painel')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container">
+    <h1>Bem-vindo ao painel</h1>
+    <p class="subtitulo">Escolha o que deseja gerenciar</p>
+
+    <div class="cards-grid">
+        <a th:href="@{/painel/usuarios}" class="card card-menu">
+            <span class="emoji">👤</span>
+            <h2>Usuários</h2>
+            <p>Cadastrar e gerenciar pessoas</p>
+        </a>
+        <a th:href="@{/painel/projetos}" class="card card-menu">
+            <span class="emoji">📁</span>
+            <h2>Projetos</h2>
+            <p>Criar e acompanhar projetos</p>
+        </a>
+        <a th:href="@{/painel/tarefas}" class="card card-menu">
+            <span class="emoji">✅</span>
+            <h2>Tarefas</h2>
+            <p>Organizar tarefas por projeto</p>
+        </a>
+    </div>
+</main>
+
+<script th:src="@{/js/api.js}"></script>
+<script th:src="@{/js/painel.js}"></script>
+</body>
+</html>

@@ -27,6 +27,12 @@
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
+        <!-- Frontend server-side (Thymeleaf) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
         <!-- Persistencia (JPA / Hibernate) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

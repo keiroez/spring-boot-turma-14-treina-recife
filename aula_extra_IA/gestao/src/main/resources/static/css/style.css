@@ -1,0 +1,341 @@
+/* ============================================================
+   Estilo base - Gestão de Projetos
+   ============================================================ */
+:root {
+    --primaria: #4f46e5;
+    --primaria-escura: #4338ca;
+    --secundaria: #64748b;
+    --perigo: #dc2626;
+    --sucesso: #16a34a;
+    --fundo: #f1f5f9;
+    --card: #ffffff;
+    --borda: #e2e8f0;
+    --texto: #1e293b;
+    --texto-suave: #64748b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--fundo);
+    color: var(--texto);
+    line-height: 1.5;
+}
+
+h1 {
+    margin-bottom: .25rem;
+    font-size: 1.6rem;
+}
+
+h2 {
+    margin-bottom: 1rem;
+    font-size: 1.15rem;
+}
+
+.subtitulo {
+    color: var(--texto-suave);
+    margin-bottom: 1.5rem;
+}
+
+a {
+    color: var(--primaria);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* --- Navbar --------------------------------------------------------------- */
+.navbar {
+    background: var(--primaria);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .9rem 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .1);
+}
+
+.navbar .brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+}
+
+.navbar .nav-links a {
+    color: #e0e7ff;
+    font-weight: 500;
+}
+
+.navbar .nav-links a:hover {
+    color: #fff;
+    text-decoration: none;
+}
+
+.usuario-logado {
+    color: #c7d2fe;
+    font-size: .85rem;
+}
+
+/* --- Layout --------------------------------------------------------------- */
+.container {
+    max-width: 1000px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.tela-centralizada {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+/* --- Cards ---------------------------------------------------------------- */
+.card {
+    background: var(--card);
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+}
+
+.card-auth {
+    width: 100%;
+    max-width: 380px;
+}
+
+.card-auth h1 {
+    text-align: center;
+}
+
+.card-auth .subtitulo {
+    text-align: center;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+}
+
+.card-menu {
+    text-align: center;
+    transition: transform .15s, box-shadow .15s;
+}
+
+.card-menu:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(79, 70, 229, .15);
+    text-decoration: none;
+}
+
+.card-menu .emoji {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* --- Formulários ---------------------------------------------------------- */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-grid .col-span-2 {
+    grid-column: 1 / -1;
+}
+
+.form-acoes {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: .8rem;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--texto-suave);
+    gap: .3rem;
+}
+
+input, select, textarea {
+    padding: .6rem .7rem;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    font-size: .95rem;
+    font-family: inherit;
+    color: var(--texto);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primaria);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, .15);
+}
+
+/* --- Botões --------------------------------------------------------------- */
+.btn {
+    padding: .6rem 1.1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, opacity .15s;
+}
+
+.btn-sm {
+    padding: .35rem .7rem;
+    font-size: .8rem;
+}
+
+.btn-primario {
+    background: var(--primaria);
+    color: #fff;
+}
+
+.btn-primario:hover {
+    background: var(--primaria-escura);
+}
+
+.btn-secundario {
+    background: #e2e8f0;
+    color: var(--texto);
+}
+
+.btn-secundario:hover {
+    background: #cbd5e1;
+}
+
+.btn-perigo {
+    background: var(--perigo);
+    color: #fff;
+}
+
+.btn-perigo:hover {
+    opacity: .85;
+}
+
+.btn-sair {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+}
+
+.btn-sair:hover {
+    background: rgba(255, 255, 255, .28);
+}
+
+/* --- Tabela --------------------------------------------------------------- */
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela th, .tabela td {
+    text-align: left;
+    padding: .7rem .6rem;
+    border-bottom: 1px solid var(--borda);
+    font-size: .9rem;
+}
+
+.tabela th {
+    color: var(--texto-suave);
+    text-transform: uppercase;
+    font-size: .75rem;
+    letter-spacing: .03em;
+}
+
+.tabela tbody tr:hover, .tabela tr:hover {
+    background: #f8fafc;
+}
+
+.acoes {
+    display: flex;
+    gap: .4rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 999px;
+    background: #e0e7ff;
+    color: var(--primaria-escura);
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.badge.prioridade-ALTA {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge.prioridade-MEDIA {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.badge.prioridade-BAIXA {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+/* --- Mensagens ------------------------------------------------------------ */
+.mensagem {
+    margin-top: .8rem;
+    font-size: .9rem;
+    min-height: 1.2rem;
+    text-align: center;
+}
+
+.mensagem.erro {
+    color: var(--perigo);
+}
+
+.mensagem.sucesso {
+    color: var(--sucesso);
+}
+
+.link-secundario {
+    text-align: center;
+    margin-top: 1rem;
+    font-size: .9rem;
+    color: var(--texto-suave);
+}
+
+.oculto {
+    display: none !important;
+}
+
+@media (max-width: 640px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .navbar {
+        flex-direction: column;
+        gap: .6rem;
+    }
+}

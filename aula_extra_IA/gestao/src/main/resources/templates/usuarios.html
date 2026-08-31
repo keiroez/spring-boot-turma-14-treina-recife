@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Usuários')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container">
+    <h1>Usuários</h1>
+
+    <section class="card">
+        <h2 id="form-titulo">Novo usuário</h2>
+        <form id="form-usuario" class="form-grid">
+            <input type="hidden" id="id">
+            <label>Nome<input type="text" id="nome" required></label>
+            <label>CPF<input type="text" id="cpf" maxlength="14" required></label>
+            <label>E-mail<input type="email" id="email" required></label>
+            <label>Senha<input type="password" id="senha" minlength="6" placeholder="mín. 6 caracteres"></label>
+            <label>Data de nascimento<input type="date" id="dataNascimento"></label>
+            <label>Status
+                <select id="status">
+                    <option value="ATIVO">ATIVO</option>
+                    <option value="INATIVO">INATIVO</option>
+                    <option value="BLOQUEADO">BLOQUEADO</option>
+                </select>
+            </label>
+            <div class="form-acoes">
+                <button type="submit" class="btn btn-primario">Salvar</button>
+                <button type="button" id="btn-cancelar" class="btn btn-secundario oculto">Cancelar</button>
+            </div>
+        </form>
+        <p id="mensagem" class="mensagem"></p>
+    </section>
+
+    <section class="card">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>ID</th><th>Nome</th><th>CPF</th><th>E-mail</th><th>Status</th><th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="tabela-corpo"></tbody>
+        </table>
+    </section>
+</main>
+
+<script th:src="@{/js/api.js}"></script>
+<script th:src="@{/js/usuarios.js}"></script>
+</body>
+</html>

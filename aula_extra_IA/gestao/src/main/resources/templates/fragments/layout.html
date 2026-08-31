@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(titulo)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${titulo} + ' | Gestão de Projetos'">Gestão de Projetos</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<!-- Barra de navegação reutilizável -->
+<nav th:fragment="navbar" class="navbar">
+    <a class="brand" th:href="@{/painel}">📋 Gestão de Projetos</a>
+    <div class="nav-links">
+        <a th:href="@{/painel/usuarios}">Usuários</a>
+        <a th:href="@{/painel/projetos}">Projetos</a>
+        <a th:href="@{/painel/tarefas}">Tarefas</a>
+        <span id="usuario-logado" class="usuario-logado"></span>
+        <button type="button" id="btn-logout" class="btn btn-sair">Sair</button>
+    </div>
+</nav>
+
+</body>
+</html>

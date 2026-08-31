@@ -26,6 +26,19 @@ public class SecurityConfig {
             "/swagger-ui.html"
     };
 
+    // Paginas Thymeleaf (cascas HTML) e recursos estaticos.
+    // Os dados sao carregados via fetch com token JWT, entao as paginas em si sao publicas.
+    private static final String[] RECURSOS_WEB = {
+            "/",
+            "/login",
+            "/cadastro",
+            "/painel/**",
+            "/css/**",
+            "/js/**",
+            "/images/**",
+            "/favicon.ico"
+    };
+
     private final JwtFilter jwtFilter;
 
     public SecurityConfig(JwtFilter jwtFilter) {
@@ -40,6 +53,7 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(RECURSOS_WEB).permitAll()
                         .requestMatchers(ENDPOINTS_PUBLICOS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()

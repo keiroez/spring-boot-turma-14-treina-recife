@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tarefas')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container">
+    <h1>Tarefas</h1>
+
+    <section class="card">
+        <h2 id="form-titulo">Nova tarefa</h2>
+        <form id="form-tarefa" class="form-grid">
+            <input type="hidden" id="id">
+            <label>Título<input type="text" id="titulo" required></label>
+            <label>Data de conclusão<input type="date" id="dataConclusao"></label>
+            <label class="col-span-2">Descrição<textarea id="descricao" rows="2"></textarea></label>
+            <label>Prioridade
+                <select id="prioridade">
+                    <option value="BAIXA">BAIXA</option>
+                    <option value="MEDIA">MEDIA</option>
+                    <option value="ALTA">ALTA</option>
+                </select>
+            </label>
+            <label>Status
+                <select id="status">
+                    <option value="PENDENTE">PENDENTE</option>
+                    <option value="FAZENDO">FAZENDO</option>
+                    <option value="CONCLUIDA">CONCLUIDA</option>
+                </select>
+            </label>
+            <label>Projeto
+                <select id="projetoId"><option value="">— nenhum —</option></select>
+            </label>
+            <label>Responsável
+                <select id="usuarioId"><option value="">— nenhum —</option></select>
+            </label>
+            <div class="form-acoes">
+                <button type="submit" class="btn btn-primario">Salvar</button>
+                <button type="button" id="btn-cancelar" class="btn btn-secundario oculto">Cancelar</button>
+            </div>
+        </form>
+        <p id="mensagem" class="mensagem"></p>
+    </section>
+
+    <section class="card">
+        <table class="tabela">
+            <thead>
+            <tr>
+                <th>ID</th><th>Título</th><th>Prioridade</th><th>Status</th><th>Projeto</th><th>Responsável</th><th>Ações</th>
+            </tr>
+            </thead>
+            <tbody id="tabela-corpo"></tbody>
+        </table>
+    </section>
+</main>
+
+<script th:src="@{/js/api.js}"></script>
+<script th:src="@{/js/tarefas.js}"></script>
+</body>
+</html>

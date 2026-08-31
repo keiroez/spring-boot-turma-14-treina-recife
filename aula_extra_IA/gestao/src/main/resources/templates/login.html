@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body class="tela-centralizada">
+
+<main class="card card-auth">
+    <h1>Entrar</h1>
+    <p class="subtitulo">Acesse o painel de gestão</p>
+
+    <form id="form-login">
+        <label>
+            E-mail
+            <input type="email" id="email" placeholder="voce@exemplo.com" required>
+        </label>
+        <label>
+            Senha
+            <input type="password" id="senha" placeholder="••••••" required>
+        </label>
+        <button type="submit" class="btn btn-primario">Entrar</button>
+    </form>
+
+    <p id="mensagem" class="mensagem"></p>
+    <p class="link-secundario">
+        Não tem conta? <a th:href="@{/cadastro}">Cadastre-se</a>
+    </p>
+</main>
+
+<script th:src="@{/js/api.js}"></script>
+<script th:src="@{/js/login.js}"></script>
+</body>
+</html>
