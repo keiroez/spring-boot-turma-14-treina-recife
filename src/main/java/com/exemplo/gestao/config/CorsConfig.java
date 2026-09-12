@@ -1,27 +1,42 @@
 package com.exemplo.gestao.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * Libera CORS para a API.
  *
- * Por que isso existe: quando o frontend roda no mesmo servidor da API
- * (abrindo http://localhost:8080) o navegador nao reclama de nada. Mas se
- * o aluno abrir o HTML pelo Live Server do VS Code (http://127.0.0.1:5500)
- * e apontar o API_URL para o backend publicado no Railway, a chamada passa
- * a ser "cross-origin": o navegador bloqueia a resposta a menos que o
- * servidor autorize explicitamente, que e o que fazemos aqui.
+ * Por que isso existe: se o frontend for aberto de outro endereco (ex.: o Live
+ * Server do VS Code em http://127.0.0.1:5500 chamando a API publicada), a
+ * chamada e "cross-origin" e o navegador so entrega a resposta ao JavaScript
+ * se o servidor autorizar explicitamente.
+ *
+ * Por que um CorsConfigurationSource e nao um WebMvcConfigurer#addCorsMappings:
+ * o addCorsMappings so atua dentro do Spring MVC. Quando o Spring Security
+ * recusa a requisicao (403 por falta de token), a resposta e montada na cadeia
+ * de filtros, antes do MVC, e sai sem os cabecalhos CORS. O navegador bloqueia
+ * essa resposta e o fetch estoura "Failed to fetch", escondendo o 403 e
+ * parecendo um erro de CORS. Declarando um CorsConfigurationSource, o
+ * SecurityConfig liga o filtro de CORS no inicio da cadeia e ai toda resposta
+ * leva os cabecalhos - inclusive os erros.
  */
 @Configuration
-public class CorsConfig implements WebMvcConfigurer {
+public class CorsConfig {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOriginPatterns("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*");
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuracao = new CorsConfiguration();
+        configuracao.setAllowedOriginPatterns(List.of("*"));
+        configuracao.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuracao.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
+        fonte.registerCorsConfiguration("/**", configuracao);
+        return fonte;
     }
 }
