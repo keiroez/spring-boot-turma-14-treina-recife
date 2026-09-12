@@ -32,6 +32,12 @@ api:
 server:
   # O Railway escolhe a porta e entrega no PORT. Local, sem PORT definido, cai no 8080.
   port: ${PORT:8080}
+  # O Railway (como qualquer proxy) termina o HTTPS e repassa a requisicao ao
+  # container em http, informando o original nos cabecalhos X-Forwarded-*.
+  # Sem confiar neles, a aplicacao se acha em http e o Swagger monta a URL do
+  # servidor como http://... - ai o "Try it out" chama outra origem (http) a
+  # partir de uma pagina https e o navegador bloqueia como erro de CORS.
+  forward-headers-strategy: framework
 
 springdoc:
   swagger-ui:

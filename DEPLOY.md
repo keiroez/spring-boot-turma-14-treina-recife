@@ -57,6 +57,19 @@ api:
 
 Segredo **nunca** vai chumbado no código que está no GitHub.
 
+### E `forward-headers-strategy`
+
+```yml
+server:
+  forward-headers-strategy: framework
+```
+
+O Railway atende o `https` para o mundo e repassa a requisição ao seu container em `http`,
+informando o endereço original nos cabeçalhos `X-Forwarded-Proto` e `X-Forwarded-Host`.
+Sem essa linha o Spring ignora esses cabeçalhos, acha que a aplicação roda em
+`http://localhost` e monta links errados — o mais visível é o Swagger, que anuncia o
+servidor como `http://...` e faz o *Try it out* falhar com erro de CORS.
+
 ---
 
 ## 3. Subir o código para o GitHub
@@ -148,6 +161,7 @@ Como o banco é H2 em memória, **todo deploy zera os dados** e volta ao estado 
 | Build falha no Maven | erro de compilação — rode `./mvnw clean package` na sua máquina primeiro |
 | Deploy fica “unhealthy” / domínio dá 502 | a porta foi fixada em vez de usar `${PORT:8080}` |
 | Rota privada dá 403 depois de um redeploy | token antigo com `JWT_SECRET` novo — faça login de novo |
+| *Try it out* do Swagger dá erro de CORS | falta `server.forward-headers-strategy: framework` — sem isso o app se acha em `http` e monta a URL do servidor com `http://`, que é outra origem para a página `https` |
 | Frontend local não chama a API | URL da API errada no seu codigo, ou digitada com `/` no final |
 | “No Dockerfile found” | o `Dockerfile` não está na raiz da branch selecionada |
 
