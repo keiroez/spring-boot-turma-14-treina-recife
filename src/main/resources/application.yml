@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: gestao
+  datasource:
+    # H2 em memoria: nada para instalar. O banco vive enquanto a aplicacao estiver rodando.
+    # DB_CLOSE_DELAY=-1 mantem o banco vivo mesmo quando nenhuma conexao esta aberta.
+    url: jdbc:h2:mem:gestao;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      # O Flyway cria o schema; o Hibernate apenas confere se as entidades batem com as tabelas.
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# Configuracoes da API de seguranca / token JWT
+api:
+  security:
+    token:
+      # Em producao (Railway) defina a variavel de ambiente JWT_SECRET.
+      secret: ${JWT_SECRET:chave-de-desenvolvimento-troque-em-producao}
+      # Tempo de expiracao do token em horas
+      expiration-hours: 2
+
+server:
+  # O Railway escolhe a porta e entrega no PORT. Local, sem PORT definido, cai no 8080.
+  port: ${PORT:8080}
+
+springdoc:
+  swagger-ui:
+    # Grupo que abre por padrao ao entrar no Swagger UI
+    urls-primary-name: "1. Rotas publicas (sem token)"

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Gestão de Projetos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="tela-centralizada">
+
+<main class="card card-auth">
+    <h1>Entrar</h1>
+    <p class="subtitulo">Acesse o painel de gestão</p>
+
+    <form id="form-login">
+        <label>
+            E-mail
+            <input type="email" id="email" placeholder="voce@exemplo.com" required>
+        </label>
+        <label>
+            Senha
+            <input type="password" id="senha" placeholder="••••••" required>
+        </label>
+        <button type="submit" class="btn btn-primario">Entrar</button>
+    </form>
+
+    <p id="mensagem" class="mensagem"></p>
+    <p class="link-secundario">
+        Não tem conta? <a href="cadastro.html">Cadastre-se</a>
+    </p>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
