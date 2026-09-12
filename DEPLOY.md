@@ -141,7 +141,7 @@ Com o domínio no ar, teste:
 | `https://SEU-DOMINIO/` | redireciona para o Swagger |
 | `https://SEU-DOMINIO/swagger-ui.html` | Swagger com os dois grupos |
 | `https://SEU-DOMINIO/public/tarefas` | lista as tarefas em JSON, sem token |
-| `https://SEU-DOMINIO/usuarios` sem token | `403` |
+| `https://SEU-DOMINIO/usuarios` sem token | `401` com JSON explicando que falta o token |
 | `POST /auth/login` com `aluno@treina.com` / `123456` | devolve o token |
 
 ---
@@ -160,7 +160,7 @@ Como o banco é H2 em memória, **todo deploy zera os dados** e volta ao estado 
 |---|---|
 | Build falha no Maven | erro de compilação — rode `./mvnw clean package` na sua máquina primeiro |
 | Deploy fica “unhealthy” / domínio dá 502 | a porta foi fixada em vez de usar `${PORT:8080}` |
-| Rota privada dá 403 depois de um redeploy | token antigo com `JWT_SECRET` novo — faça login de novo |
+| Rota privada dá 401 depois de um redeploy | token antigo com `JWT_SECRET` novo — faça login de novo |
 | *Try it out* do Swagger dá erro de CORS | falta `server.forward-headers-strategy: framework` — sem isso o app se acha em `http` e monta a URL do servidor com `http://`, que é outra origem para a página `https` |
 | Frontend local não chama a API | URL da API errada no seu codigo, ou digitada com `/` no final |
 | “No Dockerfile found” | o `Dockerfile` não está na raiz da branch selecionada |

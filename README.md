@@ -119,7 +119,7 @@ Resposta: `{"token":"eyJhbGciOi...","email":"aluno@treina.com"}`
 curl http://localhost:8080/usuarios -H "Authorization: Bearer eyJhbGciOi..."
 ```
 
-Sem o token, a resposta é **403**.
+Sem o token, a resposta é **401** com um JSON explicando o que falta.
 
 ### Swagger em dois grupos
 
@@ -215,15 +215,19 @@ os campos obrigatórios, inclusive a `senha` do usuário. Na resposta, a senha n
 
 ## Erros
 
-A API sempre responde erro em JSON. Dois formatos:
-
-Erro comum — regra de negócio (400), login errado (401), id inexistente (404):
+**Todo** erro da API sai no mesmo formato, sem exceção — inclusive os de autenticação e os
+inesperados. Nunca vem corpo vazio nem página de erro do servidor:
 
 ```json
-{ "timestamp": "2026-02-01T10:00:00", "status": 404, "erro": "Tarefa nao encontrada com id 99" }
+{
+  "timestamp": "2026-02-01T10:00:00",
+  "status": 404,
+  "erro": "Tarefa nao encontrada com id 99"
+}
 ```
 
-Erro de validação (400) — traz um `campos` com uma mensagem por campo:
+Só os erros de **validação** trazem um campo a mais, o `campos`, com uma mensagem por campo
+inválido:
 
 ```json
 {
@@ -234,13 +238,32 @@ Erro de validação (400) — traz um `campos` com uma mensagem por campo:
 }
 ```
 
-| Status | Quando acontece |
+| Status | Quando acontece | Exemplo de `erro` |
+|---|---|---|
+| `400` | campo obrigatório faltando | `Erro de validacao` (+ `campos`) |
+| `400` | valor fora do enum | `Valor invalido para o campo prioridade: URGENTE. Valores aceitos: BAIXA, MEDIA, ALTA` |
+| `400` | JSON mal formado | `Corpo da requisicao invalido: confira se o JSON esta bem formado` |
+| `400` | `{id}` que não é número | `Parametro id invalido: abc` |
+| `400` | e-mail ou CPF repetido | `Ja existe um usuario com o e-mail ...` |
+| `401` | rota privada sem token, ou token expirado | `Token ausente, invalido ou expirado. Faca login em POST /auth/login ...` |
+| `401` | login com senha errada | `E-mail ou senha invalidos` |
+| `401` | login de usuário inativo/bloqueado | `Nao foi possivel autenticar: usuario inativo ou bloqueado` |
+| `404` | `{id}` que não existe | `Tarefa nao encontrada com id 99` |
+| `404` | URL que não existe | `Rota nao encontrada: /public/nao-existe` |
+| `405` | método errado na rota | `Metodo PATCH nao permitido nesta rota` |
+| `409` | excluir registro em uso | `Operacao nao permitida: o registro esta em uso ...` |
+| `415` | faltou o `Content-Type` | `Envie o cabecalho Content-Type: application/json` |
+| `500` | erro inesperado | `Erro interno no servidor` |
+
+Sucesso, para comparação: `200` nas leituras e no `PUT`, `201` no `POST` e `204` no `DELETE`
+(este último sem corpo).
+
+Quem monta essas respostas são duas classes:
+
+| Classe | Cobre |
 |---|---|
-| `400` | campo obrigatório faltando, enum inválido, e-mail/CPF repetido |
-| `401` | `/auth/login` com e-mail ou senha errados |
-| `403` | chamou uma rota privada sem token, ou com token expirado/inválido |
-| `404` | `{id}` que não existe |
-| `204` | `DELETE` bem-sucedido (sem corpo na resposta) |
+| `exception/GlobalExceptionHandler.java` | tudo que passa pelo Spring MVC |
+| `security/ErroSegurancaHandler.java` | os `401`/`403` do Spring Security, que acontecem **antes** do MVC e por isso não chegam ao handler |
 
 ---
 
@@ -285,8 +308,16 @@ const tarefas = await fetch(`${API}/tarefas`, {
 }).then(r => r.json());
 ```
 
-Se a resposta vier **403**, o token está ausente, expirado (passou das 2 horas) ou foi
-gerado com outro `JWT_SECRET` — apague o token guardado e faça login de novo.
+Se a resposta vier **401**, o token está ausente, expirado (passou das 2 horas) ou foi
+gerado com outro `JWT_SECRET` — apague o token guardado e faça login de novo. O corpo da
+resposta diz exatamente isso, então vale um `console.log` nele:
+
+```js
+if (!resposta.ok) {
+  const erro = await resposta.json();
+  console.log(erro.status, erro.erro, erro.campos ?? "");
+}
+```
 
 ---
 

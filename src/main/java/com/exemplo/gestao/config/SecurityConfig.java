@@ -1,5 +1,6 @@
 package com.exemplo.gestao.config;
 
+import com.exemplo.gestao.security.ErroSegurancaHandler;
 import com.exemplo.gestao.security.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,9 +34,11 @@ public class SecurityConfig {
     };
 
     private final JwtFilter jwtFilter;
+    private final ErroSegurancaHandler erroSegurancaHandler;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    public SecurityConfig(JwtFilter jwtFilter, ErroSegurancaHandler erroSegurancaHandler) {
         this.jwtFilter = jwtFilter;
+        this.erroSegurancaHandler = erroSegurancaHandler;
     }
 
     @Bean
@@ -52,6 +55,12 @@ public class SecurityConfig {
                         .requestMatchers(ENDPOINTS_PUBLICOS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                // Sem isto, uma rota privada sem token responde 401/403 com corpo
+                // vazio. O handler devolve o mesmo JSON de erro do resto da API.
+                .exceptionHandling(erros -> erros
+                        .authenticationEntryPoint(erroSegurancaHandler)
+                        .accessDeniedHandler(erroSegurancaHandler)
                 )
                 // Adiciona o filtro JWT antes do filtro padrao de usuario/senha
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
