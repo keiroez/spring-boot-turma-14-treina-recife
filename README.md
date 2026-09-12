@@ -15,6 +15,11 @@ Diferenças em relação à branch `main`:
 
 As regras de negócio (services, entidades, validações) são as mesmas.
 
+**Índice:** [Stack](#stack) · [Como rodar](#como-rodar) · [A API](#a-api) ·
+[Corpo das requisições](#corpo-das-requisições) · [Erros](#erros) ·
+[Como é o frontend](#como-é-o-frontend) · [Estrutura do projeto](#estrutura-do-projeto) ·
+[Publicar na internet](#publicar-na-internet)
+
 ---
 
 ## Stack
@@ -48,6 +53,7 @@ A aplicação sobe em **http://localhost:8080**.
 | http://localhost:8080/ | Tela de login (frontend) |
 | http://localhost:8080/painel.html | Painel, depois de logar |
 | http://localhost:8080/swagger-ui.html | Documentação da API |
+| http://localhost:8080/public/tarefas | JSON das tarefas, sem login — bom teste rápido |
 
 ### Usuário de teste
 
@@ -60,6 +66,9 @@ senha:  123456
 > (ou a cada novo deploy no Railway) o Flyway recria as tabelas e insere de novo o usuário
 > de teste, um projeto e duas tarefas de exemplo — tudo o que você cadastrar no meio do
 > caminho desaparece. Isso é esperado: é um ambiente de estudo, não de produção.
+
+Na sua máquina não precisa configurar nada: o `application.yml` já tem valores padrão para
+o banco e para o segredo do JWT. O token vale **2 horas** (`api.security.token.expiration-hours`).
 
 ---
 
@@ -130,6 +139,118 @@ No topo do Swagger UI existe o seletor **Select a definition**:
 
 ---
 
+## Corpo das requisições
+
+O que mandar no `POST`/`PUT` de cada recurso. Os exemplos abaixo são JSON válido —
+dá para copiar e colar no Postman ou no Swagger.
+
+### Usuário — `/public/usuarios` ou `/usuarios`
+
+```json
+{
+  "nome": "Maria Silva",
+  "cpf": "12345678901",
+  "email": "maria@exemplo.com",
+  "senha": "123456",
+  "dataNascimento": "2000-05-20",
+  "status": "ATIVO"
+}
+```
+
+| Campo | Obrigatório | Regra |
+|---|---|---|
+| `nome` | sim | — |
+| `cpf` | sim | 11 a 14 caracteres, não pode repetir |
+| `email` | sim | e-mail válido, não pode repetir |
+| `senha` | sim | mínimo 6 caracteres |
+| `dataNascimento` | não | data no passado |
+| `status` | sim | `ATIVO`, `INATIVO` ou `BLOQUEADO` |
+
+### Projeto — `/public/projetos` ou `/projetos`
+
+```json
+{
+  "nome": "Site novo",
+  "descricao": "texto livre",
+  "dataInicio": "2026-02-01",
+  "dataConclusao": null,
+  "status": "ATIVO",
+  "responsavelId": 1
+}
+```
+
+| Campo | Obrigatório | Regra |
+|---|---|---|
+| `nome` | sim | — |
+| `descricao` | não | — |
+| `dataInicio` | sim | — |
+| `dataConclusao` | não | — |
+| `status` | sim | `ATIVO`, `CONCLUIDO` ou `CANCELADO` |
+| `responsavelId` | sim | id de um usuário existente |
+
+### Tarefa — `/public/tarefas` ou `/tarefas`
+
+```json
+{
+  "titulo": "Criar a tela",
+  "descricao": "texto livre",
+  "dataConclusao": null,
+  "prioridade": "ALTA",
+  "status": "PENDENTE",
+  "projetoId": 1,
+  "usuarioId": 1
+}
+```
+
+| Campo | Obrigatório | Regra |
+|---|---|---|
+| `titulo` | sim | — |
+| `descricao` | não | — |
+| `dataConclusao` | não | — |
+| `prioridade` | sim | `BAIXA`, `MEDIA` ou `ALTA` |
+| `status` | sim | `PENDENTE`, `FAZENDO` ou `CONCLUIDA` |
+| `projetoId` | não | id de um projeto existente |
+| `usuarioId` | não | id de um usuário existente |
+
+Datas sempre no formato `aaaa-mm-dd`. O `PUT` substitui o recurso inteiro: mande **todos**
+os campos obrigatórios, inclusive a `senha` do usuário. Na resposta, a senha nunca é devolvida.
+
+> As duas únicas regras de negócio que podem barrar um cadastro: **e-mail** e **CPF** de
+> usuário não podem repetir.
+
+## Erros
+
+A API sempre responde erro em JSON. Dois formatos:
+
+Erro comum — regra de negócio (400), login errado (401), id inexistente (404):
+
+```json
+{ "timestamp": "2026-02-01T10:00:00", "status": 404, "erro": "Tarefa nao encontrada com id 99" }
+```
+
+Erro de validação (400) — traz um `campos` com uma mensagem por campo:
+
+```json
+{
+  "timestamp": "2026-02-01T10:00:00",
+  "status": 400,
+  "erro": "Erro de validacao",
+  "campos": { "titulo": "Titulo e obrigatorio", "prioridade": "Prioridade e obrigatoria" }
+}
+```
+
+| Status | Quando acontece |
+|---|---|
+| `400` | campo obrigatório faltando, enum inválido, e-mail/CPF repetido |
+| `401` | `/auth/login` com e-mail ou senha errados |
+| `403` | chamou uma rota privada sem token, ou com token expirado/inválido |
+| `404` | `{id}` que não existe |
+| `204` | `DELETE` bem-sucedido (sem corpo na resposta) |
+
+A função `extrairErro()` do `js/api.js` já lê os dois formatos — use ela de exemplo.
+
+---
+
 ## Como é o frontend
 
 Não há framework nem build: são arquivos soltos em `src/main/resources/static`, servidos
@@ -172,6 +293,43 @@ const API_URL = "https://seu-projeto.up.railway.app";
 Com `API_URL` vazio, o frontend chama o mesmo servidor que entregou a página — que é o caso
 quando você acessa pelo `localhost:8080`. A classe `config/CorsConfig.java` é o que autoriza
 o navegador a fazer essa chamada de uma origem diferente.
+
+---
+
+## Estrutura do projeto
+
+```
+.
+├── Dockerfile                  # receita de build/execução usada pelo Railway
+├── .dockerignore
+├── DEPLOY.md                   # passo a passo da publicação
+├── pom.xml
+└── src/main/
+    ├── java/com/exemplo/gestao/
+    │   ├── config/             # SecurityConfig, OpenApiConfig (grupos), CorsConfig
+    │   ├── controller/         # rotas REST (/... e /public/...)
+    │   ├── dto/                # records de request e response
+    │   ├── exception/          # GlobalExceptionHandler e exceções próprias
+    │   ├── model/              # entidades JPA + enums
+    │   ├── repository/         # interfaces do Spring Data
+    │   ├── security/           # JwtFilter, TokenService, AutenticacaoService
+    │   └── service/            # regras de negócio
+    └── resources/
+        ├── application.yml
+        ├── db/migration/       # V1 (tabelas) e V2 (dados iniciais)
+        └── static/             # o frontend
+
+```
+
+Onde olhar primeiro, por assunto:
+
+| Quero entender... | Arquivo |
+|---|---|
+| quais rotas são abertas | `config/SecurityConfig.java` |
+| como os dois grupos do Swagger são montados | `config/OpenApiConfig.java` |
+| como o token é gerado e validado | `security/TokenService.java`, `security/JwtFilter.java` |
+| como o frontend manda o token | `static/js/api.js` |
+| as tabelas e os dados de exemplo | `db/migration/` |
 
 ---
 
