@@ -125,11 +125,11 @@ Com o domínio no ar, teste:
 
 | Teste | O que esperar |
 |---|---|
-| `https://SEU-DOMINIO/` | tela de login |
-| logar com `aluno@treina.com` / `123456` | vai para o painel e lista os dados de exemplo |
+| `https://SEU-DOMINIO/` | redireciona para o Swagger |
 | `https://SEU-DOMINIO/swagger-ui.html` | Swagger com os dois grupos |
 | `https://SEU-DOMINIO/public/tarefas` | lista as tarefas em JSON, sem token |
 | `https://SEU-DOMINIO/usuarios` sem token | `403` |
+| `POST /auth/login` com `aluno@treina.com` / `123456` | devolve o token |
 
 ---
 
@@ -147,8 +147,8 @@ Como o banco é H2 em memória, **todo deploy zera os dados** e volta ao estado 
 |---|---|
 | Build falha no Maven | erro de compilação — rode `./mvnw clean package` na sua máquina primeiro |
 | Deploy fica “unhealthy” / domínio dá 502 | a porta foi fixada em vez de usar `${PORT:8080}` |
-| Login dá 403 depois de um redeploy | token antigo no navegador com `JWT_SECRET` novo — limpe o `localStorage` e logue de novo |
-| Frontend local não chama a API | `API_URL` em `js/api.js` sem a URL do Railway, ou digitada com `/` no final |
+| Rota privada dá 403 depois de um redeploy | token antigo com `JWT_SECRET` novo — faça login de novo |
+| Frontend local não chama a API | URL da API errada no seu codigo, ou digitada com `/` no final |
 | “No Dockerfile found” | o `Dockerfile` não está na raiz da branch selecionada |
 
 ---
@@ -162,5 +162,5 @@ docker build -t gestao .
 docker run -p 8080:8080 gestao
 ```
 
-Depois acesse http://localhost:8080. O `-p 8080:8080` liga a porta 8080 da sua máquina
-na porta 8080 de dentro do container.
+Depois acesse http://localhost:8080/swagger-ui.html. O `-p 8080:8080` liga a porta 8080
+da sua máquina na porta 8080 de dentro do container.

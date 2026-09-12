@@ -18,6 +18,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private static final String[] ENDPOINTS_PUBLICOS = {
+            // Raiz: redireciona para a documentacao
+            "/",
             "/auth/login",
             "/auth/register",
             // Copia aberta do CRUD (/public/usuarios, /public/projetos, /public/tarefas).
@@ -27,17 +29,6 @@ public class SecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
-    };
-
-    // Frontend estatico (HTML, CSS e JS). As paginas em si sao publicas;
-    // os dados sao carregados via fetch enviando o token JWT.
-    private static final String[] RECURSOS_WEB = {
-            "/",
-            "/*.html",
-            "/css/**",
-            "/js/**",
-            "/images/**",
-            "/favicon.ico"
     };
 
     private final JwtFilter jwtFilter;
@@ -54,7 +45,6 @@ public class SecurityConfig {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(RECURSOS_WEB).permitAll()
                         .requestMatchers(ENDPOINTS_PUBLICOS).permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()

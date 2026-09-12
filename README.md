@@ -1,24 +1,26 @@
-# Gestão de Projetos — API REST + Frontend (branch de deploy)
+# Gestão de Projetos — API REST (branch de deploy)
 
-Versão do projeto da **aula extra** preparada para ser **publicada na internet** (Railway, via Docker)
-e usada pelos alunos para estudar **frontend chamando backend**.
+Versão do projeto da **aula extra** reduzida a uma **API REST** e preparada para ser
+**publicada na internet** (Railway, via Docker). A ideia é você subir esta API e escrever
+o **seu** frontend consumindo ela.
 
 Diferenças em relação à branch `main`:
 
 | | `main` (aula extra) | esta branch |
 |---|---|---|
 | Banco | MySQL + Flyway | **H2 em memória** + Flyway |
-| Frontend | Thymeleaf (páginas renderizadas no servidor) | **HTML/CSS/JS estático** |
+| Frontend | Thymeleaf + JS servidos pela aplicação | **nenhum** — só a API; o frontend é você quem escreve |
 | Backend | API REST + MVC | **API REST pura, stateless (JWT)** |
-| Swagger | 1 lista só | **2 grupos**: CRUD aberto em `/public/...` e CRUD com JWT |
+| Rotas | só com autenticação | **`/public/...` aberta** + as mesmas rotas com JWT |
+| Swagger | 1 lista só | **2 grupos**: CRUD aberto e CRUD com JWT |
 | Deploy | — | **Dockerfile** pronto (veja [DEPLOY.md](DEPLOY.md)) |
 
 As regras de negócio (services, entidades, validações) são as mesmas.
 
 **Índice:** [Stack](#stack) · [Como rodar](#como-rodar) · [A API](#a-api) ·
 [Corpo das requisições](#corpo-das-requisições) · [Erros](#erros) ·
-[Como é o frontend](#como-é-o-frontend) · [Estrutura do projeto](#estrutura-do-projeto) ·
-[Publicar na internet](#publicar-na-internet)
+[Chamando a API do seu frontend](#chamando-a-api-do-seu-frontend) ·
+[Estrutura do projeto](#estrutura-do-projeto) · [Publicar na internet](#publicar-na-internet)
 
 ---
 
@@ -32,7 +34,6 @@ As regras de negócio (services, entidades, validações) são as mesmas.
 | Migrations | Flyway (`src/main/resources/db/migration`) |
 | Segurança | Spring Security + JWT (auth0 `java-jwt`), stateless |
 | Docs | Swagger UI (`/swagger-ui.html`) |
-| Frontend | HTML + CSS + JavaScript puro (`src/main/resources/static`) |
 
 ---
 
@@ -50,9 +51,8 @@ A aplicação sobe em **http://localhost:8080**.
 
 | URL | O que é |
 |---|---|
-| http://localhost:8080/ | Tela de login (frontend) |
-| http://localhost:8080/painel.html | Painel, depois de logar |
-| http://localhost:8080/swagger-ui.html | Documentação da API |
+| http://localhost:8080/swagger-ui.html | Documentação da API — o ponto de partida |
+| http://localhost:8080/ | redireciona para o Swagger |
 | http://localhost:8080/public/tarefas | JSON das tarefas, sem login — bom teste rápido |
 
 ### Usuário de teste
@@ -100,11 +100,6 @@ funcionando, troque para as rotas sem o prefixo e aprenda a enviar o token.
 > editar e excluir. É de propósito, para o ambiente de estudo. Não cadastre nada real ali.
 
 ### Começando sem token
-
-```js
-// nenhum cabeçalho, nenhum login
-const tarefas = await fetch("/public/tarefas").then(r => r.json());
-```
 
 ```bash
 curl http://localhost:8080/public/tarefas
@@ -247,52 +242,51 @@ Erro de validação (400) — traz um `campos` com uma mensagem por campo:
 | `404` | `{id}` que não existe |
 | `204` | `DELETE` bem-sucedido (sem corpo na resposta) |
 
-A função `extrairErro()` do `js/api.js` já lê os dois formatos — use ela de exemplo.
-
 ---
 
-## Como é o frontend
+## Chamando a API do seu frontend
 
-Não há framework nem build: são arquivos soltos em `src/main/resources/static`, servidos
-pelo próprio Spring Boot.
+Esta branch **não tem frontend**: é só a API. Crie seu projeto onde preferir (HTML/CSS/JS
+puro com o Live Server do VS Code, React, Angular...) e aponte para esta URL.
 
-```
-static/
-├── index.html       # login
-├── cadastro.html
-├── painel.html      # menu
-├── usuarios.html    # CRUD
-├── projetos.html    # CRUD
-├── tarefas.html     # CRUD
-├── css/style.css
-└── js/
-    ├── api.js       # token + apiFetch (a parte importante)
-    ├── login.js
-    ├── cadastro.js
-    ├── painel.js
-    ├── usuarios.js
-    ├── projetos.js
-    └── tarefas.js
-```
+O CORS já está liberado para qualquer origem em `config/CorsConfig.java`, então dá para
+rodar o frontend em `http://127.0.0.1:5500` chamando a API no `localhost:8080`, ou chamando
+o deploy do Railway.
 
-O fluxo que vale entender está em `js/api.js`:
-
-1. o login guarda o token no `localStorage`;
-2. `apiFetch()` injeta o cabeçalho `Authorization: Bearer <token>` em toda chamada;
-3. se a API responde 401/403, limpa o token e volta para a tela de login.
-
-### Rodar só o frontend apontando para a API publicada
-
-Dá para editar o HTML/JS na sua máquina (ex.: extensão *Live Server* do VS Code) usando o
-backend que está no Railway. Basta preencher a constante no topo de `js/api.js`:
+### Passo 1 — sem autenticação
 
 ```js
-const API_URL = "https://seu-projeto.up.railway.app";
+const API = "http://localhost:8080";   // ou a URL do Railway
+
+const tarefas = await fetch(`${API}/public/tarefas`).then(r => r.json());
+
+await fetch(`${API}/public/tarefas`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ titulo: "Minha tarefa", prioridade: "BAIXA", status: "PENDENTE" })
+});
 ```
 
-Com `API_URL` vazio, o frontend chama o mesmo servidor que entregou a página — que é o caso
-quando você acessa pelo `localhost:8080`. A classe `config/CorsConfig.java` é o que autoriza
-o navegador a fazer essa chamada de uma origem diferente.
+### Passo 2 — com JWT
+
+```js
+// 1. login: guarda o token
+const { token } = await fetch(`${API}/auth/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email: "aluno@treina.com", senha: "123456" })
+}).then(r => r.json());
+
+localStorage.setItem("token", token);
+
+// 2. toda chamada seguinte manda o token no cabeçalho Authorization
+const tarefas = await fetch(`${API}/tarefas`, {
+  headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+}).then(r => r.json());
+```
+
+Se a resposta vier **403**, o token está ausente, expirado (passou das 2 horas) ou foi
+gerado com outro `JWT_SECRET` — apague o token guardado e faça login de novo.
 
 ---
 
@@ -316,9 +310,7 @@ o navegador a fazer essa chamada de uma origem diferente.
     │   └── service/            # regras de negócio
     └── resources/
         ├── application.yml
-        ├── db/migration/       # V1 (tabelas) e V2 (dados iniciais)
-        └── static/             # o frontend
-
+        └── db/migration/       # V1 (tabelas) e V2 (dados iniciais)
 ```
 
 Onde olhar primeiro, por assunto:
@@ -328,7 +320,7 @@ Onde olhar primeiro, por assunto:
 | quais rotas são abertas | `config/SecurityConfig.java` |
 | como os dois grupos do Swagger são montados | `config/OpenApiConfig.java` |
 | como o token é gerado e validado | `security/TokenService.java`, `security/JwtFilter.java` |
-| como o frontend manda o token | `static/js/api.js` |
+| por que o navegador consegue chamar de outra origem | `config/CorsConfig.java` |
 | as tabelas e os dados de exemplo | `db/migration/` |
 
 ---

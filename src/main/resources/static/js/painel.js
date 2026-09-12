@@ -1,2 +1,0 @@
-exigirAutenticacao();
-configurarNavbar();
